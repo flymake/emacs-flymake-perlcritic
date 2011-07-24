@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+#  Wrapper around perlcritic and perl -c for Emacs flymake.
+
+FILE_NAME="$1"
+shift
+
+# Run perlcritic first.
+# TODO: be nice to include severity and have it turn into warning/error.
+perlcritic --nocolour "$FILE_NAME" --verbose "%f:%l:%c: Warning: %m. %e.\n" $*
+
+# Run perl -c too for good measure.
+perl -wc -Mstrict "$FILE_NAME"
+
+exit 0
