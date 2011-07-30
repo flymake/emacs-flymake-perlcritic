@@ -1,5 +1,5 @@
 Perl::Critic plugin for Emacs Flymake mode
-=============================================
+==========================================
 
 Flymake mode is an Emacs mode that allows you to run continuous
 syntax checks against the current buffer "While U Type".
@@ -14,11 +14,6 @@ static analysis as you edit.
 Setup
 -----
 
-You will need to have a copy of flymake.el that has my patches
-applied, you can grab them from here:
-
- *  https://github.com/illusori/emacs-flymake
-
 You will also need Perl::Critic installed, this can be installed
 via CPAN:
 
@@ -30,7 +25,8 @@ something like the following to your .emacs:
 
 ```lisp
 ;; If flymake_perlcritic isn't in your path.
-(setq flymake-perlcritic-command "~/projects/emacs-flymake-perlcritic/bin/flymake_perlcritic")
+(setq flymake-perlcritic-command
+  "~/projects/emacs-flymake-perlcritic/bin/flymake_perlcritic")
 
 ;; Lets set it to be the most severe available.
 (setq flymake-perlcritic-severity 1)
@@ -42,3 +38,13 @@ something like the following to your .emacs:
 ```
 
 Have fun.
+
+See Also
+--------
+
+You might also be interested in my patched version of flymake.el
+which contains fixes and enhancements that can be used by flymake-perlcritic.el,
+you can grab it from here:
+
+ *  https://github.com/illusori/emacs-flymake
+
