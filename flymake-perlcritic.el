@@ -1,13 +1,19 @@
-;; A replcement flymake handler for Perl to invoke Perl::Critic
-;;
-;; This makes use of features in my fork of flymake.el found at:
-;;   https://github.com/illusori/emacs-flymake
+;;; flymake-perlcritic.el --- Flymake handler for Perl to invoke Perl::Critic
 ;;
 ;; Author: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
-;; Homepage: https://github.com/illusori/emacs-flymake-perlcritic
+;; Maintainer: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
+;; URL: https://github.com/illusori/emacs-flymake-perlcritic
+;; Version: 1.0
+;; Package-Requires: ((flymake "0.3"))
 ;;
-;; Usage:
-;;   (require 'flymake-perlcritic)
+;;; Commentary:
+;;
+;; flymake-perlcritic.el adds support for running Perl::Critic
+;; (http://search.cpan.org/perldoc?Perl::Critic) to perform static
+;; analysis of your Perl code in addition to syntax checking.
+;;
+;;; Usage:
+;; (require 'flymake-perlcritic)
 
 (defcustom flymake-perlcritic-command "perlcritic_flymake"
   "If perlcritic_flymake isn't in your $PATH, set this to the command needed to run it."
@@ -49,3 +55,4 @@
   )
 
 (provide 'flymake-perlcritic)
+;;; flymake-perlcritic.el ends here
