@@ -3,7 +3,7 @@
 ;; Author: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; Maintainer: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; URL: https://github.com/illusori/emacs-flymake-perlcritic
-;; Version: 1.0
+;; Version: 1.0.1
 ;; Package-Requires: ((flymake "0.3"))
 ;;
 ;;; Commentary:
@@ -44,6 +44,8 @@
                             'flymake-create-temp-inplace)))
              (local-file (file-relative-name temp-file
                            (file-name-directory buffer-file-name))))
+        (if (fboundp 'flymake-perlbrew-path-sync)
+          (flymake-perlbrew-path-sync))
         (list flymake-perlcritic-command
           (list local-file
             (concat
