@@ -2,3 +2,5 @@
   * Add support for flymake-find-perl-lib-dir by modifying PERL5LIB
     so that both perl -c and perlcritic find the project lib dir.
   * Add help-text to flymake_perlcritic.
+  * Use flymake-create-temp-with-folder-structure to prevent Perl::Critic
+    complaining that package declarations don't match filename.
