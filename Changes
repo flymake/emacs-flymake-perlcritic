@@ -1,0 +1,4 @@
+* flymake-perlcritic.el 1.0.2 (candidate)
+  * Add support for flymake-find-perl-lib-dir by modifying PERL5LIB
+    so that both perl -c and perlcritic find the project lib dir.
+  * Add help-text to flymake_perlcritic.
