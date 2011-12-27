@@ -43,11 +43,13 @@
                             'flymake-create-temp-copy
                             'flymake-create-temp-inplace)))
              (local-file (file-relative-name temp-file
-                           (file-name-directory buffer-file-name))))
+                           (file-name-directory buffer-file-name)))
+             (include-dir (if (fboundp 'flymake-find-perl-lib-dir) (flymake-find-perl-lib-dir buffer-file-name))))
         (if (fboundp 'flymake-perlbrew-path-sync)
           (flymake-perlbrew-path-sync))
         (list flymake-perlcritic-command
-          (list local-file
+          (list (if include-dir (concat "-I" include-dir) "")
+            local-file
             (concat
               (if flymake-perlcritic-profile (concat "--profile " flymake-perlcritic-profile) "")
               (concat "--severity " (number-to-string flymake-perlcritic-severity))))))
