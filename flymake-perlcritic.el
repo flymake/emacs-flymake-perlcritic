@@ -46,11 +46,11 @@
         (if (fboundp 'flymake-perlbrew-path-sync)
           (flymake-perlbrew-path-sync))
         (list flymake-perlcritic-command
-          (list (if include-dir (concat "-I" include-dir) "")
-            local-file
-            (concat
-              (if flymake-perlcritic-profile (concat "--profile " flymake-perlcritic-profile) "")
-              (concat "--severity " (number-to-string flymake-perlcritic-severity))))))
+          (append
+            (if include-dir (list (concat "-I" include-dir)))
+            (list local-file)
+            (if flymake-perlcritic-profile (list "--profile" flymake-perlcritic-profile))
+            (list "--severity" (number-to-string flymake-perlcritic-severity)))))
       )
     (defun flymake-perl-cleanup ()
       "Cleanup after `flymake-perl-init' -- delete temp file and dirs."
