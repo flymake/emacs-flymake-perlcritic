@@ -5,7 +5,7 @@
 ;; Author: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; Maintainer: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; URL: https://github.com/illusori/emacs-flymake-perlcritic
-;; Version: 1.0.1
+;; Version: 1.0.2
 ;; Package-Requires: ((flymake "0.3"))
 ;;
 ;; This program is free software: you can redistribute it and/or modify
