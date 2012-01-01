@@ -1,14 +1,29 @@
 ;;; flymake-perlcritic.el --- Flymake handler for Perl to invoke Perl::Critic
 ;;
+;; Copyright (C) 2011-2012  Free Software Foundation, Inc.
+;;
 ;; Author: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; Maintainer: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; URL: https://github.com/illusori/emacs-flymake-perlcritic
 ;; Version: 1.0.1
 ;; Package-Requires: ((flymake "0.3"))
 ;;
+;; This program is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;;
 ;;; Commentary:
 ;;
-;; flymake-perlcritic.el adds support for running Perl::Critic
+;; flymake-perlcritic.el adds support to flymake.el for running Perl::Critic
 ;; (http://search.cpan.org/perldoc?Perl::Critic) to perform static
 ;; analysis of your Perl code in addition to syntax checking.
 ;;

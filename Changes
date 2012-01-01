@@ -4,3 +4,4 @@
   * Add help-text to flymake_perlcritic.
   * Use flymake-create-temp-with-folder-structure to prevent Perl::Critic
     complaining that package declarations don't match filename.
+  * Bequeath copyright to FSF and add GPL license.
