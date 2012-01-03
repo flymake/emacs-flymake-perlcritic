@@ -30,6 +30,8 @@
 ;;; Usage:
 ;; (require 'flymake-perlcritic)
 
+(eval-when-compile (require 'flymake))
+
 (defcustom flymake-perlcritic-command "perlcritic_flymake"
   "If perlcritic_flymake isn't in your $PATH, set this to the command needed to run it."
   :group 'flymake-perlcritic
@@ -45,41 +47,42 @@
   :group 'flymake-perlcritic
   :type 'integer)
 
+(defun flymake-perlcritic-init ()
+  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                      'flymake-create-temp-with-folder-structure))
+         (local-file (file-relative-name temp-file
+                       (file-name-directory buffer-file-name)))
+         (include-dir (if (fboundp 'flymake-find-perl-lib-dir)
+                        (flymake-find-perl-lib-dir buffer-file-name))))
+    (if (fboundp 'flymake-perlbrew-path-sync)
+      (flymake-perlbrew-path-sync))
+    (list flymake-perlcritic-command
+      (append
+        (if include-dir (list (concat "-I" include-dir)))
+        (list local-file)
+        (if flymake-perlcritic-profile (list "--profile" flymake-perlcritic-profile))
+        (list "--severity" (number-to-string flymake-perlcritic-severity))))))
+
+(defun flymake-perlcritic-cleanup ()
+  "Cleanup after `flymake-perlcritic-init' - delete temp file and dirs."
+  (flymake-safe-delete-file flymake-temp-source-file-name)
+  (when flymake-temp-source-file-name
+    (flymake-delete-temp-directory
+      (file-name-directory flymake-temp-source-file-name))))
+
 (eval-after-load "flymake"
   '(progn
-    ;; Add a new error pattern to catch Perl::Critic output, this is a custom format
-    ;; defined in perlcritic_flymake since the Perl::Critic default isn't parsable in
-    ;; a way that flymake.el likes.
+    ;; Add a new error pattern to catch Perl::Critic output, this is a custom
+    ;; format defined in perlcritic_flymake since the Perl::Critic default
+    ;; isn't parsable in a way that flymake.el likes.
     (add-to-list 'flymake-err-line-patterns
                  '("\\(.*\\):\\([0-9]+\\):\\([0-9]+\\): \\(.*\\)" 1 2 3 4))
-    (defun flymake-perl-init ()
-      (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                          'flymake-create-temp-with-folder-structure))
-             (local-file (file-relative-name temp-file
-                           (file-name-directory buffer-file-name)))
-             (include-dir (if (fboundp 'flymake-find-perl-lib-dir) (flymake-find-perl-lib-dir buffer-file-name))))
-        (if (fboundp 'flymake-perlbrew-path-sync)
-          (flymake-perlbrew-path-sync))
-        (list flymake-perlcritic-command
-          (append
-            (if include-dir (list (concat "-I" include-dir)))
-            (list local-file)
-            (if flymake-perlcritic-profile (list "--profile" flymake-perlcritic-profile))
-            (list "--severity" (number-to-string flymake-perlcritic-severity)))))
-      )
-    (defun flymake-perl-cleanup ()
-      "Cleanup after `flymake-perl-init' -- delete temp file and dirs."
-      (flymake-safe-delete-file flymake-temp-source-file-name)
-      (when flymake-temp-source-file-name
-        (flymake-delete-temp-directory
-         (file-name-directory flymake-temp-source-file-name))))
     (let ((mode-and-masks (flymake-get-file-name-mode-and-masks "example.pm")))
+      (setcar mode-and-masks 'flymake-perlcritic-init)
       (if (nth 1 mode-and-masks)
-        (setcdr mode-and-masks (cons 'flymake-perl-cleanup (cddr mode-and-masks)))
-        (setcdr mode-and-masks (cons 'flymake-perl-cleanup nil))))
-    (add-hook 'perl-mode-hook (lambda() (flymake-mode 1)))
-    )
-  )
+        (setcar (nthcdr 1 mode-and-masks) 'flymake-perlcritic-cleanup)
+        (nconc mode-and-masks (list 'flymake-perlcritic-cleanup))))
+    (add-hook 'perl-mode-hook (lambda() (flymake-mode 1)))))
 
 (provide 'flymake-perlcritic)
 ;;; flymake-perlcritic.el ends here

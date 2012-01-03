@@ -1,3 +1,7 @@
+* flymake-perlcritic.el 1.0.3 (candidate)
+  * Define init and cleanup functions as flymake-perlcritic-*.
+  * Override Flymake Perl functions less evilly.
+
 * flymake-perlcritic.el 1.0.2 (2012-01-01-09:46)
   * Add support for flymake-find-perl-lib-dir by modifying PERL5LIB
     so that both perl -c and perlcritic find the project lib dir.
