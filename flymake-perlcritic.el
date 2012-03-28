@@ -5,7 +5,7 @@
 ;; Author: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; Maintainer: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; URL: https://github.com/illusori/emacs-flymake-perlcritic
-;; Version: 1.0.2
+;; Version: 1.0.3
 ;; Package-Requires: ((flymake "0.3"))
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,10 @@
 
 (eval-when-compile (require 'flymake))
 
-(defcustom flymake-perlcritic-command "perlcritic_flymake"
-  "If perlcritic_flymake isn't in your $PATH, set this to the command needed to run it."
+(defcustom flymake-perlcritic-command (executable-find
+  (concat (file-name-directory (or load-file-name buffer-file-name))
+          "bin/flymake_perlcritic"))
+  "If flymake_perlcritic isn't in your $PATH, set this to the command needed to run it."
   :group 'flymake-perlcritic
   :type 'string)
 
@@ -82,7 +84,7 @@
       (if (nth 1 mode-and-masks)
         (setcar (nthcdr 1 mode-and-masks) 'flymake-perlcritic-cleanup)
         (nconc mode-and-masks (list 'flymake-perlcritic-cleanup))))
-    (add-hook 'perl-mode-hook (lambda() (flymake-mode 1)))))
+    (add-hook 'perl-mode-hook (lambda() (flymake-mode 1)) t)))
 
 (provide 'flymake-perlcritic)
 ;;; flymake-perlcritic.el ends here

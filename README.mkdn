@@ -24,7 +24,7 @@ flymake-perlcritic.el somewhere that emacs can find it and add
 something like the following to your .emacs:
 
 ```lisp
-;; If flymake_perlcritic isn't in your path.
+;; If flymake_perlcritic isn't found correctly, specify the full path
 (setq flymake-perlcritic-command
   "~/projects/emacs-flymake-perlcritic/bin/flymake_perlcritic")
 
