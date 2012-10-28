@@ -39,6 +39,14 @@ something like the following to your .emacs:
 
 Have fun.
 
+
+Known Issues
+------------
+
+ * Perl syntax checking also uses "perl -c", which executes BEGIN blocks, this can
+   be considered a security vulnerability when opening untrusted files.
+   For more information: http://stackoverflow.com/a/12908487/870000
+
 See Also
 --------
 
@@ -46,5 +54,5 @@ You might also be interested in my patched version of flymake.el
 which contains fixes and enhancements that can be used by flymake-perlcritic.el,
 you can grab it from here:
 
- *  https://github.com/illusori/emacs-flymake
+ * https://github.com/illusori/emacs-flymake
 
