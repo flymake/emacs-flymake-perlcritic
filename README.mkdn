@@ -1,6 +1,9 @@
 Perl::Critic plugin for Emacs Flymake mode
 ==========================================
 
+[![MELPA](https://melpa.org/packages/flymake-perlcritic-badge.svg)](https://melpa.org/#/flymake-perlcritic)
+[![MELPA Stable](https://stable.melpa.org/packages/flymake-perlcritic-badge.svg)](https://stable.melpa.org/#/flymake-perlcritic)
+
 Flymake mode is an Emacs mode that allows you to run continuous
 syntax checks against the current buffer "While U Type".
 
