@@ -1,8 +1,10 @@
+(package "flymake-perlcritic"
+         "1.0.3"
+         "Flymake handler for Perl to invoke Perl::Critic")
+
+(package-file "flymake-perlcritic.el")
+
 (source "gnu")
 (source "melpa")
 
-(package "flymake-perlcritic" "1.0.3" "Flymake handler for Perl to invoke Perl::Critic")
-(package-file "flymake-perlcritic.el")
-
-(setq network-security-level 'low      ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
-      byte-compile-error-on-warn nil)
+(setq network-security-level 'low)  ; see https://github.com/jcs090218/setup-emacs-windows/issues/156#issuecomment-932956432
