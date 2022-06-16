@@ -2,6 +2,9 @@
          "1.0.3"
          "Flymake handler for Perl to invoke Perl::Critic")
 
+(website-url "https://github.com/illusori/emacs-flymake-perlcritic")
+(keywords "")
+
 (package-file "flymake-perlcritic.el")
 
 (source "gnu")
