@@ -24,12 +24,15 @@
 ;;
 ;;; Commentary:
 ;;
-;; flymake-perlcritic.el adds support to flymake.el for running Perl::Critic
-;; (http://search.cpan.org/perldoc?Perl::Critic) to perform static
-;; analysis of your Perl code in addition to syntax checking.
+;; `flymake-perlcritic.el' adds support to `flymake.el' for running
+;; `Perl::Critic' (http://search.cpan.org/perldoc?Perl::Critic) to
+;; perform static analysis of your Perl code in addition to syntax
+;; checking.
 ;;
 ;;; Usage:
 ;; (add-hook 'perl-mode-hook 'flymake-perlcritic-setup)
+
+;;; Code:
 
 (require 'flymake)
 
@@ -158,4 +161,4 @@ add this function to `perl-mode-hook'."
   (add-hook 'flymake-diagnostic-functions 'flymake-perlcritic-backend nil 'local))
 
 (provide 'flymake-perlcritic)
-;;; flymake-perlcritic.el ends here
+;;; flymake-perlcritic.el ends here.
