@@ -31,7 +31,7 @@
 ;;; Usage:
 ;; (add-hook 'perl-mode-hook 'flymake-perlcritic-setup)
 
-(eval-when-compile (require 'flymake))
+(require 'flymake)
 
 (defcustom flymake-perlcritic-command (executable-find "perlcritic")
   "Command of perlcritic.
