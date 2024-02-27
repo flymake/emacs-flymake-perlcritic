@@ -40,7 +40,8 @@ something like the following to your .emacs:
 ;; If you don't want to use the default ~/.perlcriticrc
 (setq flymake-perlcritic-profile "~/projects/big-project/perlcriticrc")
 
-(require 'flymake-perlcritic)
+;; Setup Flymake perlcritic for Perl mode
+(add-hook 'perl-mode-hook 'flymake-perlcritic-register)
 ```
 
 Have fun.

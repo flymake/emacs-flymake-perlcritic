@@ -1,12 +1,13 @@
 ;;; flymake-perlcritic.el --- Flymake handler for Perl to invoke Perl::Critic
 ;;
-;; Copyright (C) 2011-2012  Free Software Foundation, Inc.
+;; Copyright (C) 2011-2024  Free Software Foundation, Inc.
 ;;
 ;; Author: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
+;;         gemmaro <gemmaro.dev@gmail.com>
 ;; Maintainer: Sam Graham <libflymake-perlcritic-emacs BLAHBLAH illusori.co.uk>
 ;; URL: https://github.com/illusori/emacs-flymake-perlcritic
 ;; Version: 1.0.3
-;; Package-Requires: ((flymake "0.3"))
+;; Package-Requires: ((flymake "1.2"))
 ;;
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -28,14 +29,14 @@
 ;; analysis of your Perl code in addition to syntax checking.
 ;;
 ;;; Usage:
-;; (require 'flymake-perlcritic)
+;; (add-hook 'perl-mode-hook 'flymake-perlcritic-setup)
 
 (eval-when-compile (require 'flymake))
 
-(defcustom flymake-perlcritic-command (executable-find
-  (concat (file-name-directory (or load-file-name buffer-file-name))
-          "bin/flymake_perlcritic"))
-  "If flymake_perlcritic isn't in your $PATH, set this to the command needed to run it."
+(defcustom flymake-perlcritic-command (executable-find "perlcritic")
+  "Command of perlcritic.
+If `perlcritic' isn't in your `$PATH', set it to the command
+needed to run it."
   :group 'flymake-perlcritic
   :type 'string)
 
@@ -44,47 +45,112 @@
   :group 'flymake-perlcritic
   :type 'string)
 
+(defconst flymake-perlcritic--severities
+  '(choice (const :tag "gentle" 5)
+           (const :tag "stern" 4)
+           (const :tag "harsh" 3)
+           (const :tag "cruel" 2)
+           (const :tag "brutal" 1))
+  "Severities of perlcritic.
+See also the `perlcritic' documentation[1].
+
+[1] https://metacpan.org/dist/Perl-Critic/view/bin/perlcritic#-severity-NAME")
+
 (defcustom flymake-perlcritic-severity 4
   "The severity to run perlcritic at, values are 1 to 5 with 1 being strictest."
   :group 'flymake-perlcritic
   :type 'integer)
 
+(defcustom flymake-perlcritic-error-threshold 5
+  "Error threshold for Flymake diagnostic types.
+The lower Severities are considered to be at \"warning\" or \"note\" level."
+  :group 'flymake-perlcritic
+  :type `(choice (const :tag "Default" nil)
+                 ,flymake-perlcritic--severities))
+
+(defcustom flymake-perlcritic-warning-threshold nil
+  "Warning threshold for Flymake diagnostic types.
+The lower severities are considered to be at \"note\" level."
+  :group 'flymake-perlcritic
+  :type `(choice (const :tag "Default" nil)
+                 ,flymake-perlcritic--severities))
+
+(defvar-local flymake-perlcritic--proc nil
+  "Flymake perlcritic process.")
+
+(defun flymake-perlcritic-backend (report-fn &rest _args)
+  "Flymake for perlcritic.
+This calls REPORT-FN to pass diagnostic objects."
+  (unless flymake-perlcritic-command
+    (error "Cannot find a suitable perlcritic"))
+  (when (process-live-p flymake-perlcritic--proc)
+    (kill-process flymake-perlcritic--proc))
+  (let ((source (current-buffer)))
+    (save-restriction
+      (widen)
+      (setq flymake-perlcritic--proc
+            (make-process
+             :name "flymake-perlcritic"
+             :noquery t
+             :connection-type 'pipe
+             :buffer (generate-new-buffer " *Flymake-perlcritic*")
+             :command (flymake-perlcritic-init)
+             :sentinel (apply-partially 'flymake-perlcritic--sentinel report-fn source)))
+      (process-send-region flymake-perlcritic--proc (point-min) (point-max))
+      (process-send-eof flymake-perlcritic--proc))))
+
+(defun flymake-perlcritic--sentinel (report-fn source proc _event)
+    "Sentinel for perlcritic process PROC.
+SOURCE is the target source for perlcritic.  When perlcritic
+exits successfully, it calls REPORT-FN to report to Flymake."
+  (when (memq (process-status proc) '(exit signal))
+    (unwind-protect
+        (if (with-current-buffer source (eq proc flymake-perlcritic--proc))
+            (with-current-buffer (process-buffer proc)
+              (goto-char (point-min))
+              (cl-loop
+               while (search-forward-regexp
+                      (rx (group (+ digit)) ":"
+                          (group (+ digit)) ":"
+                          (group (+ digit)) ":"
+                          (group (+ not-newline))
+                          line-end)
+                      nil t)
+               for severity    = (string-to-number (match-string 1))
+               for line        = (string-to-number (match-string 2))
+               for column      = (string-to-number (match-string 3))
+               for msg         = (match-string 4)
+               for (beg . end) = (flymake-diag-region source line column)
+               for type = (cond
+                           ((and flymake-perlcritic-error-threshold
+                                 (>= severity flymake-perlcritic-error-threshold))
+                            :error)
+                           ((and flymake-perlcritic-warning-threshold
+                                 (>= severity flymake-perlcritic-warning-threshold))
+                            :warning)
+                           (t :note))
+               collect (flymake-make-diagnostic source beg end type msg)
+               into diags
+               finally (funcall report-fn diags)))
+          (flymake-log :warning "Canceling obsolete check %s" proc))
+      (kill-buffer (process-buffer proc)))))
+
 (defun flymake-perlcritic-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                      'flymake-create-temp-with-folder-structure))
-         (local-file (file-relative-name temp-file
-                       (file-name-directory buffer-file-name)))
-         (include-dir (if (fboundp 'flymake-find-perl-lib-dir)
-                        (flymake-find-perl-lib-dir buffer-file-name))))
-    (if (fboundp 'flymake-perlbrew-path-sync)
-      (flymake-perlbrew-path-sync))
-    (list flymake-perlcritic-command
-      (append
-        (if include-dir (list (concat "-I" include-dir)))
-        (list local-file)
-        (if flymake-perlcritic-profile (list "--profile" flymake-perlcritic-profile))
-        (list "--severity" (number-to-string flymake-perlcritic-severity))))))
+  "Initialise perlcritic command."
+  (let ((command (list "perlcritic"
+                       "--nocolour"
+                       "--verbose" "%s:%l:%c:%m.  %e.  (%p)\\n"
+                       "--severity" (number-to-string flymake-perlcritic-severity))))
+    (if flymake-perlcritic-profile
+        (append command (list "--profile" flymake-perlcritic-profile))
+      command)))
 
-(defun flymake-perlcritic-cleanup ()
-  "Cleanup after `flymake-perlcritic-init' - delete temp file and dirs."
-  (flymake-safe-delete-file flymake-temp-source-file-name)
-  (when flymake-temp-source-file-name
-    (flymake-delete-temp-directory
-      (file-name-directory flymake-temp-source-file-name))))
-
-(eval-after-load "flymake"
-  '(progn
-    ;; Add a new error pattern to catch Perl::Critic output, this is a custom
-    ;; format defined in perlcritic_flymake since the Perl::Critic default
-    ;; isn't parsable in a way that flymake.el likes.
-    (add-to-list 'flymake-err-line-patterns
-                 '("\\(.*\\):\\([0-9]+\\):\\([0-9]+\\): \\(.*\\)" 1 2 3 4))
-    (let ((mode-and-masks (flymake-get-file-name-mode-and-masks "example.pm")))
-      (setcar mode-and-masks 'flymake-perlcritic-init)
-      (if (nth 1 mode-and-masks)
-        (setcar (nthcdr 1 mode-and-masks) 'flymake-perlcritic-cleanup)
-        (nconc mode-and-masks (list 'flymake-perlcritic-cleanup))))
-    (add-hook 'perl-mode-hook (lambda() (flymake-mode 1)) t)))
+;;;###autoload
+(defun flymake-perlcritic-setup ()
+  "Set up Flymake perlcritic.
+Add perlcritic to the Flymake diagnostic functions.  To use it,
+add this function to `perl-mode-hook'."
+  (add-hook 'flymake-diagnostic-functions 'flymake-perlcritic-backend nil 'local))
 
 (provide 'flymake-perlcritic)
 ;;; flymake-perlcritic.el ends here
