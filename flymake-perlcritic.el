@@ -60,9 +60,11 @@ See also the `perlcritic' documentation[1].
 [1] https://metacpan.org/dist/Perl-Critic/view/bin/perlcritic#-severity-NAME")
 
 (defcustom flymake-perlcritic-severity 4
-  "The severity to run perlcritic at, values are 1 to 5 with 1 being strictest."
+  "The perlcritic severity.
+The severity to run perlcritic at, values are from \"brutal\" (1)
+to \"gentle\" (5) with \"brutal\" (1) being the strictest."
   :group 'flymake-perlcritic
-  :type 'integer)
+  :type flymake-perlcritic--severities)
 
 (defcustom flymake-perlcritic-error-threshold 5
   "Error threshold for Flymake diagnostic types.
