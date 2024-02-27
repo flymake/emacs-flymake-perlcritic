@@ -38,7 +38,7 @@
 If `perlcritic' isn't in your `$PATH', set it to the command
 needed to run it."
   :group 'flymake-perlcritic
-  :type 'string)
+  :type '(choice file string))
 
 (defcustom flymake-perlcritic-profile nil
   "The path to the profile file to configure perlcritic, if nil then perlcritic will look in its default location (~/.perlcriticrc)."
