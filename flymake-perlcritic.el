@@ -41,9 +41,12 @@ needed to run it."
   :type '(choice file string))
 
 (defcustom flymake-perlcritic-profile nil
-  "The path to the profile file to configure perlcritic, if nil then perlcritic will look in its default location (~/.perlcriticrc)."
+  "Profile path of perlcritic.
+The path to the profile file to configure perlcritic, if nil then
+perlcritic will look in its default location (`~/.perlcriticrc')."
   :group 'flymake-perlcritic
-  :type 'string)
+  :type '(choice (const :tag "Default" nil)
+                 file))
 
 (defconst flymake-perlcritic--severities
   '(choice (const :tag "gentle" 5)
