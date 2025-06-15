@@ -9,7 +9,7 @@
 
 (package-file "flymake-perlcritic.el")
 
-(script "test" "echo \"Error: no test specified\" && exit 1")
+(script "test" "eask test ert flymake-perlcritic.el test/*.el")
 
 (source "gnu")
 (source "melpa")
