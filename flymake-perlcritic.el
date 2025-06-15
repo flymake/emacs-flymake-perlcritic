@@ -145,7 +145,7 @@ exits successfully, it calls REPORT-FN to report to Flymake."
 
 (defun flymake-perlcritic-init ()
   "Initialise perlcritic command."
-  (let ((command (list "perlcritic"
+  (let ((command (list flymake-perlcritic-command
                        "--nocolour"
                        "--verbose" "%s:%l:%c:%m.  %e.  (%p)\\n"
                        "--severity" (number-to-string flymake-perlcritic-severity))))
