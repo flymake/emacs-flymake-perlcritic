@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@emacs-eask/cli": "^0.11.5"
+  }
+}
